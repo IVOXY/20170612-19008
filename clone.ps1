@@ -1,7 +1,7 @@
 ﻿<#
 
 .SYNOPSIS
-This script will remove a static lab environment
+This script will clone a static lab environment from a master
 
 .DESCRIPTION
 this script accepts 1 parameters: the enviorment to be refreshed. Envionments will be specfied by a folder. I haven't added
@@ -10,7 +10,7 @@ folder error checking, so you can test you input with the get-vm -location comma
 Config file location is hard wired.
 
 .EXAMPLE
-.\Remove.ps1 -env ENV2 
+.\clone.ps1 -env ENV2 
 
 .NOTES
 N/A
@@ -39,10 +39,20 @@ catch {throw "invalid config"}
 #Connect-NsxServer -server $conf.nsx.ip -user $conf.nsx.user -Password $conf.nsx.password
 
 
-get-vm -location $env | Stop-VM -Confirm:$false 
-get-vm -location $env | remove-vm -DeletePermanently:$true -Confirm:$false 
+$vms = get-vm -location $conf.cloneenv
+
+foreach ($vm in $vms) {
+    $prefix,$oldenv,$newvm = $vm -split '-'
+    New-VM -Name "$prefix-$env-$newvm" -VM (get-vm $vm) -Location "$env"  -Datastore $conf.vcenter.datastore -ResourcePool Resources -LinkedClone -ReferenceSnapshot $conf.clonesnap
+    $oldnetadapter = get-vm -Name $vm | get-networkadapter
+    $oldnetworkname = $oldnetadapter.NetworkName -match '.+BECU-(?<ENV>.+)-(?<SEG>.+)$'
+    $seg = $Matches.seg
+    get-vm "$prefix-$env-$newvm" |get-networkadapter |Set-NetworkAdapter -Portgroup (get-vdportgroup -name "*$env*$seg") -confirm:$false
+    get-vm -name "$prefix-$env-$newvm" | start-vm
+}
 
 
+#write-host $env
 
 # Disconnect from resources
 #Temporarily disabled for basic testing

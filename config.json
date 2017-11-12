@@ -5,11 +5,13 @@
     "password": "password"
   },
   "vcenter": {
-    "ip": "dc1vc1.lab.ivoxy.com",
-    "user": "svc_labapi@lab.ivoxy.com",
+    "ip": "vcenter1.lab.local",
+    "user": "svcacct@lab.local",
     "password": "password",
     "dvswitch": "dSwitch0",
     "cluster": "lab",
-    "datastore": "tintri2"
-  }
+    "datastore": "esx04"
+  },
+  cloneenv: "ENV1",
+  clonesnap: "gold"
 }
