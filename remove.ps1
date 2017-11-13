@@ -34,8 +34,7 @@ catch {throw "invalid config"}
 
 
 # Connect to required resources
-#Temporarily disabled for basic testing 
-#connect-viserver -server $conf.vcenter.ip -user $conf.vcenter.user -Password $conf.vcenter.password
+connect-viserver -server $conf.vcenter.ip -user $conf.vcenter.user -Password $conf.vcenter.password
 #Connect-NsxServer -server $conf.nsx.ip -user $conf.nsx.user -Password $conf.nsx.password
 
 
@@ -45,8 +44,7 @@ get-vm -location $env | remove-vm -DeletePermanently:$true -Confirm:$false
 
 
 # Disconnect from resources
-#Temporarily disabled for basic testing
-#Disconnect-VIServer -confirm:$false
+Disconnect-VIServer -confirm:$false
 #Disconnect-NsxServer -confirm:$false
 
 

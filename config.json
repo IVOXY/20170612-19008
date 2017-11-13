@@ -5,9 +5,9 @@
     "password": "password"
   },
   "vcenter": {
-    "ip": "vcenter1.lab.local",
+    "ip": "vcenter.lab.local",
     "user": "svcacct@lab.local",
-    "password": "password",
+    "password": "Clab4911!",
     "dvswitch": "dSwitch0",
     "cluster": "lab",
     "datastore": "esx04"
