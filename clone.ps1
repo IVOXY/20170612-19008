@@ -47,44 +47,48 @@ foreach ($vm in $vms) {
     $oldnetworkname = $oldnetadapter.NetworkName -match '.+BECU-(?<ENV>.+)-(?<SEG>.+)$'
     $seg = $Matches.seg
     get-vm "$prefix-$env-$newvm" |get-networkadapter |Set-NetworkAdapter -Portgroup (get-vdportgroup -name "*$env*$seg") -confirm:$false
-    $mac = ((get-vm "$prefix-$env-$newvm" |get-networkadapter).MacAddress)
+    $mac = ((get-vm "$vm" |get-networkadapter).MacAddress)
    
 
 
 
-## script function:  set the MAC address of a VM's NIC
-## Author: vNugglets.com
+    ## script function:  set the MAC address of a VM's NIC
+    ## Author: vNugglets.com
  
-## the name of the VM whose NIC's MAC address to change
-$strTargetVMName = "$prefix-$env-$newvm"
-## the MAC address to use
-$strNewMACAddr = $mac
+    ## the name of the VM whose NIC's MAC address to change
+    $strTargetVMName = "$prefix-$env-$newvm"
+    ## the MAC address to use
+    $strNewMACAddr = "$mac"
  
-## get the .NET view object of the VM
-$viewTargetVM = Get-View -ViewType VirtualMachine -Property Name,Config.Hardware.Device -Filter @{"Name" = "^${strTargetVMName}$"}
-## get the NIC device (further operations assume that this VM has only one NIC)
-$deviceNIC = $viewTargetVM.Config.Hardware.Device | Where-Object {$_ -is [VMware.Vim.VirtualEthernetCard]}
-## set the MAC address to the specified value
-$deviceNIC.MacAddress = $strNewMACAddr
-## set the MAC address type to manual
-$deviceNIC.addressType = "Manual"
- 
-## create the new VMConfigSpec
-$specNewVMConfig = New-Object VMware.Vim.VirtualMachineConfigSpec -Property @{
-   ## setup the deviceChange object
-   deviceChange = New-Object VMware.Vim.VirtualDeviceConfigSpec -Property @{
-       ## the kind of operation, from the given enumeration
-       operation = "edit"
-       ## the device to change, with the desired settings
-       device = $deviceNIC
-   } ## end New-Object
-} ## end New-Object
- 
-## reconfigure the "clone" VM
-$viewTargetVM.ReconfigVM($specNewVMConfig)
+ write-host $strTargetVMName
+ write-host $strNewMACAddr
 
 
-#end imported code
+    ## get the .NET view object of the VM
+    $viewTargetVM = Get-View -ViewType VirtualMachine -Property Name,Config.Hardware.Device -Filter @{"Name" = "^${strTargetVMName}$"}
+    ## get the NIC device (further operations assume that this VM has only one NIC)
+    $deviceNIC = $viewTargetVM.Config.Hardware.Device | Where-Object {$_ -is [VMware.Vim.VirtualEthernetCard]}
+    ## set the MAC address to the specified value
+    $deviceNIC.MacAddress = $strNewMACAddr
+    ## set the MAC address type to manual
+    $deviceNIC.addressType = "Manual"
+ 
+    ## create the new VMConfigSpec
+    $specNewVMConfig = New-Object VMware.Vim.VirtualMachineConfigSpec -Property @{
+       ## setup the deviceChange object
+       deviceChange = New-Object VMware.Vim.VirtualDeviceConfigSpec -Property @{
+           ## the kind of operation, from the given enumeration
+           operation = "edit"
+           ## the device to change, with the desired settings
+           device = $deviceNIC
+       } ## end New-Object
+    } ## end New-Object
+ 
+    ## reconfigure the "clone" VM
+    $viewTargetVM.ReconfigVM($specNewVMConfig)
+
+
+    #end imported code
 
     #get-vm "$prefix-$env-$newvm" |get-networkadapter |Set-NetworkAdapter -MacAddress 00:50:56:9d:cb:8e
     get-vm -name "$prefix-$env-$newvm" | start-vm
