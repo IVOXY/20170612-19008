@@ -23,7 +23,7 @@ http://github.com/ivoxy
 param([string[]]$env)
 
 # Variable declarations
-$paramconf = "./config.json"
+$paramconf = "C:\webcommander\powershell\20170612-19008\config.json"
 
 
 # Import config data in JSON format
