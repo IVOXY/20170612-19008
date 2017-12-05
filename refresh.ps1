@@ -1,4 +1,4 @@
-﻿<#
+<#
 
 .SYNOPSIS
 This script will clone a static lab environment from a master
@@ -37,7 +37,12 @@ catch {throw "invalid config"}
 connect-viserver -server $conf.vcenter.ip -user $conf.vcenter.user -Password $conf.vcenter.password
 #Connect-NsxServer -server $conf.nsx.ip -user $conf.nsx.user -Password $conf.nsx.password
 
+#Remove old VMs
+get-vm -location $env | Stop-VM -Confirm:$false 
+get-vm -location $env | remove-vm -DeletePermanently:$true -Confirm:$false 
 
+
+Build New VMs
 $vms = get-vm -location $conf.cloneenv
 
 foreach ($vm in $vms) {
@@ -60,6 +65,7 @@ foreach ($vm in $vms) {
     ## the MAC address to use
     $strNewMACAddr = "$mac"
  
+
 
 
     ## get the .NET view object of the VM
@@ -101,6 +107,4 @@ foreach ($vm in $vms) {
 # Disconnect from resources
 Disconnect-VIServer -confirm:$false
 #Disconnect-NsxServer -confirm:$false
-
-
-
+﻿

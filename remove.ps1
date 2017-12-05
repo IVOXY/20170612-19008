@@ -20,8 +20,12 @@ http://github.com/ivoxy
 
 #>
 
-param([string[]]$env)
+start-transcript
 
+#. .\objects.ps1
+
+#param([string[]]$env)
+$env = "env2"
 # Variable declarations
 $paramconf = "C:\webcommander\powershell\20170612-19008\config.json"
 
@@ -31,6 +35,7 @@ try {
     $conf = get-content -raw -path $paramconf |convertfrom-json
 }
 catch {throw "invalid config"}
+
 
 
 # Connect to required resources
@@ -43,9 +48,10 @@ get-vm -location $env | remove-vm -DeletePermanently:$true -Confirm:$false
 
 
 
+
 # Disconnect from resources
 Disconnect-VIServer -confirm:$false
 #Disconnect-NsxServer -confirm:$false
 
-
+stop-transcript
 
